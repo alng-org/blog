@@ -1,0 +1,25 @@
+<head>
+<meta name="viewport" content="width=device-width height=device-height initial-scale=1.0
+                               minimum-scale=1.0 maximum-scale=1.0 user-scalable=no"/>
+<title>Thinking for ever</title>
+<script>
+function load_blog(){
+let tips=document.getElementById("tips");
+fetch("https://api.github.com/repos/alng-org/blog/contents/")
+  .then(response => response.json())
+  .then(blogs =>{
+    tips.remove();
+    for(let blog of blogs){
+      document.body.innerHTML=document.body.innerHTML+
+      `<a href=${blog.path}><h3>${blog.name.replace(/\..*/,"")</h3></a>`;
+    }
+    return;
+  });
+  return;
+}
+</script>
+</head>
+<body onload="load_blog()">
+<h1>Welcome to my blog.</h1>
+<h5 id="tips">Please wait for loading</h5>
+</body>
