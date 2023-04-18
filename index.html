@@ -5,13 +5,17 @@
 <script>
 function load_blog(){
 let tips=document.getElementById("tips");
+let except_name=["CNAME","index.html"];
 fetch("https://api.github.com/repos/alng-org/blog/contents/")
   .then(response => response.json())
   .then(blogs =>{
     tips.remove();
     for(let blog of blogs){
-      document.body.innerHTML=document.body.innerHTML+
-      `<a href=${blog.path}><h3>${blog.name.replace(/\..*/,"")}</h3></a>`;
+      if(except_name.includes(blog.name)==false){
+        document.body.innerHTML=document.body.innerHTML+
+        `<a href="${blog.path}"><h3>${blog.name.replace(/\..*/,"")}</h3></a>`;
+      }else{
+      /*PASS*/
     }
     return;
   });
