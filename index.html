@@ -2,6 +2,13 @@
 <meta name="viewport" content="width=device-width height=device-height initial-scale=1.0
                                minimum-scale=1.0 maximum-scale=1.0 user-scalable=no"/>
 <title>Thinking for ever</title>
+<style typw="text/css">
+  a:link{
+    color:lightgreen;
+  }
+  a:visited{
+    color:lightgray;
+  }
 <script>
 function load_blog(){
 let tips=document.getElementById("tips");
@@ -13,7 +20,7 @@ fetch("https://api.github.com/repos/alng-org/blog/contents/")
     for(let blog of blogs){
       if(except_name.includes(blog.name)==false){
         document.body.innerHTML=document.body.innerHTML+
-        `<a href="${blog.path}"><h3>${blog.name.replace(/\..*/,"")}</h3></a>`;
+        `<a style="text-decoration:none;" href="${blog.path}"><h3>${blog.name.replace(/\..*/,"")}</h3></a>`;
       }else{
       /*PASS*/
       }
