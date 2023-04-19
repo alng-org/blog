@@ -26,7 +26,18 @@ function get_date(path){
        });
   return;
 }
+function UTC_now(){
+  let now=new Date();
+  return now.toUTCString();
+}
 function load_blog(){
+let expire_after_days= days=>(60*60*24*days);
+if(document.cookie!=""){
+  document.body.append(`You has visited in ${document.cookie}`);
+}else{
+  document.body.append(`Will come,it seems you are first in this site`);
+}
+document.cookie=`${UTC_now()}; max-age=${expire_after_days(7)}`;
 let tips=document.getElementById("tips");
 let blog_url=(new URL(document.location).searchParams).get("url");
 if(blog_url==null){
