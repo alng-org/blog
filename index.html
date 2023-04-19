@@ -12,7 +12,7 @@
 </style>
 <script>
 function gen_url(base_url,url){
-  if(url.includes("://"){
+  if(url.includes("://")){
     return url;
   }else{
     return `${base_url}/${url}`;
