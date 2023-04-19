@@ -11,18 +11,16 @@
   }
 </style>
 <script>
-function error(tips){
-  return msg =>{
-            tips.innerText=msg;
-            return;
-         };
+function error(msg){
+  document.body.append(`Error: ${msg}`);
+  return;
 }
 function load_blog(){
 let tips=document.getElementById("tips");
 let blog_url=(new URL(document.location).searchParams).get("url");
 if(blog_url==null){
   fetch("https://api.github.com/repos/alng-org/blog/contents/")
-  .then(response => response.json(),error(tips))
+  .then(response => response.json(),error)
   .then(blogs =>{
         tips.remove();
         for(let blog of blogs){
@@ -34,15 +32,15 @@ if(blog_url==null){
           }
         }
         return;
-      },error(tips));
+      },error);
 }else{
   fetch(`${blog_url}/blog`)
-  .then(response => response.text(),error(tips))
+  .then(response => response.text(),error)
   .then(src => {
           tips.remove();
           document.body.append(src); // Need to add more function
           return;
-        },error(tips));
+        },error);
 }
   return;
 }
