@@ -22,7 +22,7 @@ function get_date(path){
   fetch(`https://api.github.com/repos/alng-org/blog/commits?path=${path}&per_page=1`)
   .then(response => response.json())
   .then( data => {
-         conslole.log(data.commit.committer.date); //Testing
+         console.log(data.commit.committer.date); //Testing
        });
   return;
 }
