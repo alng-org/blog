@@ -11,23 +11,39 @@
   }
 </style>
 <script>
+function error(tips){
+  return msg =>{
+            tips.innerText=msg;
+            return;
+         };
+}
 function load_blog(){
 let tips=document.getElementById("tips");
-let except_name=["CNAME","index.html"];
-fetch("https://api.github.com/repos/alng-org/blog/contents/")
-  .then(response => response.json())
+let blog_url=(new URL(document.location).searchParams).get("url");
+if(blog_url==""){
+  fetch("https://api.github.com/repos/alng-org/blog/contents/")
+  .then(response => response.json(),error(tips))
   .then(blogs =>{
-    tips.remove();
-    for(let blog of blogs){
-      if(except_name.includes(blog.name)==false){
-        document.body.innerHTML=document.body.innerHTML+
-        `<a style="text-decoration:none;" href="${blog.path}"><h3>${blog.name.replace(/\..*/,"")}</h3></a>`;
-      }else{
-      /*PASS*/
-      }
-    }
-    return;
-  });
+        tips.remove();
+        for(let blog of blogs){
+          if(blog.type=="dir"){
+              document.body.innerHTML=document.body.innerHTML+
+              `<a style="text-decoration:none;" href="?url=${blog.path}"><h3>${blog.name}</h3></a>`;
+          }else{
+              /*PASS*/
+          }
+        }
+        return;
+      },error(tips));
+}else{
+  fetch(`${blog_url}/blog`)
+  .then(response => response.text(),error(tips))
+  .then(src => {
+          tips.remove();
+          body.append(src); // Need to add more function
+          return;
+        },error(tips));
+}
   return;
 }
 </script>
