@@ -40,7 +40,7 @@ if(blog_url==null){
   .then(response => response.text(),error(tips))
   .then(src => {
           tips.remove();
-          body.append(src); // Need to add more function
+          document.body.append(src); // Need to add more function
           return;
         },error(tips));
 }
