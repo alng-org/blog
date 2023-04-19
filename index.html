@@ -49,7 +49,6 @@ if(blog_url==null){
           content.style.color="lightgreen";
           content.style.fontSize="1.2em";
           src=src.replace(/\n\r|\n|\r/g,"\n");
-          let br=document.createElement("br");
           for(let line of src.split("\n")){
             switch(line[0]){
               case "$": // $img_url
@@ -71,7 +70,7 @@ if(blog_url==null){
               default:
                 content.append(line);
             }
-            content.append(br);
+            content.append(document.createElement("br"));
           } 
           document.body.append(content);
           return;
