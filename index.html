@@ -34,6 +34,10 @@ if(blog_url==null){
   .then(response => response.text())
   .then(src => {
           tips.remove();
+          let back=document.createElement("a");
+          back.href=document.referrer;
+          back.innerText="Back";
+          document.body.append(back);
           let content=document.createElement("div");
           content.style.color="lightgreen";
           content.style.fontSize="1.5em";
