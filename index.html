@@ -20,7 +20,7 @@ function error(tips){
 function load_blog(){
 let tips=document.getElementById("tips");
 let blog_url=(new URL(document.location).searchParams).get("url");
-if(blog_url==""){
+if(blog_url==null){
   fetch("https://api.github.com/repos/alng-org/blog/contents/")
   .then(response => response.json(),error(tips))
   .then(blogs =>{
