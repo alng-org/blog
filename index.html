@@ -40,8 +40,29 @@ if(blog_url==null){
           document.body.append(back);
           let content=document.createElement("div");
           content.style.color="lightgreen";
-          content.style.fontSize="1.5em";
-          content.append(src); // Need to add more function
+          content.style.fontSize="1.2em";
+          src=src.replace(/\n\r|\n|\r/g,"\n");
+          br=document.createElement("br");
+          for(let line of src.split("\n")){
+            content.append(line);
+            switch(line[0]){
+              case "$":
+                let img=document.createElement("img");
+                img.src=`${blog_url}/${line.substr(1)}`; //$img_url shown img
+                content.append(img);
+                break;
+              case "@":
+                let link=document.createElement("a");
+                link.href=`${blog_url}/${line.substr(1)}`; //@url shown a link
+                content.append(link);
+                break;
+              case "\":
+                line=line.substr(1); // \line escape line as normal text
+              default:
+                content.append(line);
+            }
+            content.append(br);
+          } 
           document.body.append(content);
           return;
         });
