@@ -49,9 +49,8 @@ if(blog_url==null){
           content.style.color="lightgreen";
           content.style.fontSize="1.2em";
           src=src.replace(/\n\r|\n|\r/g,"\n");
-          br=document.createElement("br");
+          let br=document.createElement("br");
           for(let line of src.split("\n")){
-            content.append(line);
             switch(line[0]){
               case "$": // $img_url
                 let img=document.createElement("img");
