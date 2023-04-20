@@ -4,10 +4,10 @@
 <title>Thinking for ever</title>
 <style typw="text/css">
   a:link{
-    color:lightgreen;
+    color:yellow;
   }
   a:visited{
-    color:lightgray;
+    color:skyblue;
   }
 </style>
 <script>
@@ -39,16 +39,16 @@ function load_blog(){
 let expire_after_days= days=>(60*60*24*days);
 let days=14;
 let last_visit_time=document.cookie; // The latest time you had visited this site
-let visit_time=UTC_now(); // The current time you visit this site
 if(last_visit_time!=""){
   document.body.append(`You has visited in ${last_visit_time}`);
 }else{
   document.body.append(`Will come,it seems you are first in this site.`);
-  last_visit_time=visit_time;
+  last_visit_time="2000-01-01T00:00:00Z";// If you are first in, set a virtual last visit time to mark all blogs are new
 }
-document.cookie=`${visit_time}; max-age=${expire_after_days(days)}`;
+document.cookie=`${UTC_now()}; max-age=${expire_after_days(days)}`;
 document.body.append(document.createElement("br"),
-`We used cookie to save your last visited time for ${days} days. The new blog marks by background red, and the old marks by background blue.`);
+`We used cookie to save your last visited time for ${days} days. The new blog marks by background red, and the old marks by background blue.`,
+                    document.createElement("br"),document.createElement("br"));
 let tips=document.getElementById("tips");
 let blog_url=(new URL(document.location).searchParams).get("url");
 let content=document.createElement("div");
@@ -63,6 +63,7 @@ if(blog_url==null){
           if(blog.type=="dir"){
             let a=document.createElement("a");
             a.style.textDecoration="none";
+            a.style.fontWeight="bold";
             a.href=`?url=${blog.path}`;
             a.append(blog.name);
             check_new(blog.path,a,last_visit_time);
@@ -81,6 +82,7 @@ if(blog_url==null){
           tips.remove();
           let back=document.createElement("a");
           back.href=document.referrer;
+          back.color="orange"; // Functional Node's color,Pending
           back.innerText="Back";
           document.body.append(back);
           src=src.replace(/\n\r|\n|\r/g,"\n");
