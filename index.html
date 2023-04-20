@@ -64,7 +64,7 @@ if(blog_url==null){
             a.href=`?url=${blog.path}`;
             a.append(blog.name);
             check_new(blog.path,a,last_visit_time);
-            content.append(a,document.createElement("br"));
+            content.append(a,document.createElement("br"),document.createElement("br"));
           }else{
               /*PASS*/
           }
