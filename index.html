@@ -86,7 +86,7 @@ if(blog_url==null){
           back.href=document.referrer;
           back.style.color="orange"; // Functional Node's color,Pending
           back.innerText="Back";
-          document.body.append(back);
+          document.body.append(document.createElement("br"),back);
           src=src.replace(/\n\r|\n|\r/g,"\n");
           for(let line of src.split("\n")){
             switch(line[0]){
