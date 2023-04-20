@@ -38,15 +38,17 @@ function UTC_now(){
 function load_blog(){
 let expire_after_days= days=>(60*60*24*days);
 let days=14;
-if(document.cookie!=""){
-  document.body.append(`You has visited in ${document.cookie}`);
+let last_visit_time=document.cookie; // The latest time you had visited this site
+let visit_time=UTC_now(); // The current time you visit this site
+if(last_visit_time!=""){
+  document.body.append(`You has visited in ${last_visit_time}`);
 }else{
   document.body.append(`Will come,it seems you are first in this site.`);
+  last_visit_time=visit_time;
 }
+document.cookie=`${visit_time}; max-age=${expire_after_days(days)}`;
 document.body.append(document.createElement("br"),
 `We used cookie to save your last visited time for ${days} days. The new blog marks by background red, and the old marks by background blue.`);
-let last_visit_time=document.cookie;
-document.cookie=`${UTC_now()}; max-age=${expire_after_days(days)}`;
 let tips=document.getElementById("tips");
 let blog_url=(new URL(document.location).searchParams).get("url");
 let content=document.createElement("div");
