@@ -47,8 +47,7 @@ if(last_visit_time!=""){
   last_visit_time="2000-01-01T00:00:00Z";// If you are first in, set a virtual last visit time to mark all blogs are new
 }
 document.body.append(document.createElement("br"),
-`We used cookie to save your last visited time for ${days} days. The new blog marks by background red, and the old marks by background blue.`,
-                    document.createElement("br"),document.createElement("br"));
+`We used cookie to save your last visited time for ${days} days. The new blog marks by background red, and the old marks by background blue.`);
 let tips=document.getElementById("tips");
 let blog_url=(new URL(document.location).searchParams).get("url");
 let content=document.createElement("div");
@@ -72,8 +71,10 @@ if(blog_url==null){
           }else{
               /*PASS*/
           }
-        }
-        document.body.append(content);
+        },
+        document.body.append(document.createElement("br"),
+                             document.createElement("br"),
+                             content);
         return;
       });
 }else{
@@ -111,7 +112,9 @@ if(blog_url==null){
             }
             content.append(document.createElement("br"));
           } 
-          document.body.append(content);
+          document.body.append(document.createElement("br"),
+                               document.createElement("br"),
+                               content);
           return;
         });
 }
