@@ -64,6 +64,8 @@ if(blog_url==null){
             a.style.textDecoration="none";
             a.style.fontWeight="bold";
             a.style.padding="0.3em";
+            a.style.opacity="50%";
+            a.style.backdropFilter="blur(10px)";
             a.href=`?url=${blog.path}`;
             a.append(blog.name);
             check_new(blog.path,a,last_visit_time);
@@ -122,7 +124,7 @@ if(blog_url==null){
 }
 </script>
 </head>
-<body onload="load_blog()">
+<body onload="load_blog()" style="background:linear-gradient(orange, pink);">
 <h1>Welcome to my blog.</h1>
 <h5 id="tips">Please wait for loading</h5>
 </body>
