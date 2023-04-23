@@ -7,7 +7,7 @@
     color:yellow;
   }
   a:visited{
-    color:burlywood;
+    color:white;
   }
 </style>
 <script>
@@ -65,7 +65,7 @@ if(blog_url==null){
             a.style.fontWeight="bold";
             a.style.padding="0.3em";
             a.style.opacity="50%";
-            a.style.backdropFilter="blur(10px)";
+           /* a.style.backdropFilter="blur(10px)";*/
             a.href=`?url=${blog.path}`;
             a.append(blog.name);
             check_new(blog.path,a,last_visit_time);
