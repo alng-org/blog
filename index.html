@@ -12,6 +12,7 @@
   .content{
     font-size:1.2em;
     color:aqua;
+    background-color:inherit;
   }
 </style>
 <script>
@@ -25,11 +26,11 @@ function gen_url(base_url,url){
 function blog_file(blog_url){ // Return the URL of main file of blog in blog_url
   return `${blog_url}/blog`;
 }
-function transform_text(src,content,remove_last_line=false){ //src is a text, content is a Node refer, remove_last_line flag whether remove the last line of src, reason in function load_head
+function transform_text(src,content,blog_url,remove_last_line=false){ //src is a text, content is a Node refer, remove_last_line flag whether remove the last line of src, reason in function load_head
   src=src.replace(/\n\r|\n|\r/g,"\n");
   let src_list=[];
   if(remove_last_line==true){
-    src_list=src.split("\n").slice(0,-1);
+    src_list=src.split("\n").slice(0,-1).concat(["..."]);
   }else{
     src_list=src.split("\n");
   }
@@ -57,6 +58,7 @@ function transform_text(src,content,remove_last_line=false){ //src is a text, co
     }
     content.append(document.createElement("br"));
   }
+  content.lastChild.remove();
 }
 function check_new(path,a,last_visit_time){
   fetch(`https://api.github.com/repos/alng-org/blog/commits?path=${path}&per_page=1`)
@@ -76,10 +78,10 @@ function UTC_now(){
   return now.toUTCString();
 }
 function load_head(path,head){// load the header of the blog, so the last line may be incomplete
-  fetch(blog_file(path),{headers:{Range:"bytes=0-99"}})
+  fetch(blog_file(path),{headers:{Range:"bytes=0-299"}})
   .then(response => response.text())
   .then(src => {
-          transform_text(src.toWellFormed().replace(/\ufffd/g,""),head,true);
+          transform_text(src.toWellFormed().replace(/\ufffd/g,""),head,path,true);
           return;
       });
 }
@@ -140,7 +142,7 @@ if(blog_url==null){
           back.style.color="orange"; // Functional Node's color,Pending
           back.innerText="Back";
           document.body.append(document.createElement("br"),back);
-          transform_text(src,content);
+          transform_text(src,content,blog_url);
           document.body.append(document.createElement("br"),
                                document.createElement("br"),
                                content);
