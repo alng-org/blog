@@ -9,6 +9,10 @@
   a:visited{
     color:white;
   }
+  .content{
+    font-size:1.2em;
+    color:aqua;
+  }
 </style>
 <script>
 function gen_url(base_url,url){
@@ -16,6 +20,42 @@ function gen_url(base_url,url){
     return url;
   }else{
     return `${base_url}/${url}`;
+  }
+}
+function blog_file(blog_url){ // Return the URL of main file of blog in blog_url
+  return `${blog_url}/blog`;
+}
+function transform_text(src,content,remove_last_line=false){ //src is a text, content is a Node refer, remove_last_line flag whether remove the last line of src, reason in function load_head
+  src=src.replace(/\n\r|\n|\r/g,"\n");
+  let src_list=[];
+  if(remove_last_line==true){
+    src_list=src.split("\n").slice(0,-1);
+  }else{
+    src_list=src.split("\n");
+  }
+  for(let line of src_list){
+    switch(line[0]){
+      case "$": // $img_url
+        let img=document.createElement("img");
+        img.style.maxWidth="100%";
+        img.src=gen_url(blog_url,line.substr(1));
+        content.append(img);
+        break;
+      case "&": // &text=url
+        let link=document.createElement("a");
+        let x=line.indexOf("=");
+        let url=line.substr(x+1);
+        let text=line.substr(1,x);
+        link.href=gen_url(blog_url,url);
+        link.innerText=text;
+        content.append(link);
+        break;
+      case "\\":
+        line=line.substr(1); // \line escape line as normal text
+      default:
+        content.append(line);
+    }
+    content.append(document.createElement("br"));
   }
 }
 function check_new(path,a,last_visit_time){
@@ -35,6 +75,14 @@ function UTC_now(){
   let now=new Date();
   return now.toUTCString();
 }
+function load_head(path,head){// load the header of the blog, so the last line may be incomplete
+  fetch(blog_file(path),{headers:{Range:"bytes=0-99"}})
+  .then(response => response.text())
+  .then(src => {
+          transform_text(src.toWellFormed().replace(/\ufffd/g,""),head,true);
+          return;
+      });
+}
 function load_blog(){
 let expire_after_days= days=>(60*60*24*days);
 let days=14;
@@ -51,8 +99,7 @@ document.body.append(document.createElement("br"),
 let tips=document.getElementById("tips");
 let blog_url=(new URL(document.location).searchParams).get("url");
 let content=document.createElement("div");
-content.style.color="lightgreen";
-content.style.fontSize="1.2em";
+content.className="content";
 if(blog_url==null){
   fetch("https://api.github.com/repos/alng-org/blog/contents/")
   .then(response => response.json())
@@ -69,6 +116,10 @@ if(blog_url==null){
             a.href=`?url=${blog.path}`;
             a.append(blog.name);
             check_new(blog.path,a,last_visit_time);
+            let head=document.createElement("div");
+            head.className="content";
+            a.append(head);
+            load_head(blog.path,head);
             content.append(a,document.createElement("br"),document.createElement("br"));
           }else{
               /*PASS*/
@@ -80,7 +131,7 @@ if(blog_url==null){
         return;
       });
 }else{
-  fetch(`${blog_url}/blog`)
+  fetch(blog_file(blog_url))
   .then(response => response.text())
   .then(src => {
           tips.remove();
@@ -89,31 +140,7 @@ if(blog_url==null){
           back.style.color="orange"; // Functional Node's color,Pending
           back.innerText="Back";
           document.body.append(document.createElement("br"),back);
-          src=src.replace(/\n\r|\n|\r/g,"\n");
-          for(let line of src.split("\n")){
-            switch(line[0]){
-              case "$": // $img_url
-                let img=document.createElement("img");
-                img.style.maxWidth="100%";
-                img.src=gen_url(blog_url,line.substr(1));
-                content.append(img);
-                break;
-              case "&": // &text=url
-                let link=document.createElement("a");
-                let x=line.indexOf("=");
-                let url=line.substr(x+1);
-                let text=line.substr(1,x);
-                link.href=gen_url(blog_url,url);
-                link.innerText=text;
-                content.append(link);
-                break;
-              case "\\":
-                line=line.substr(1); // \line escape line as normal text
-              default:
-                content.append(line);
-            }
-            content.append(document.createElement("br"));
-          } 
+          transform_text(src,content);
           document.body.append(document.createElement("br"),
                                document.createElement("br"),
                                content);
