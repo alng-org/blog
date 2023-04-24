@@ -13,8 +13,6 @@
     font-size:1.2em;
     color:aqua;
     background-color:inherit;
-    display:inline-block;
-    width:100%;
   }
 </style>
 <script>
@@ -120,6 +118,7 @@ if(blog_url==null){
             a.style.padding="0.3em";
             a.style.opacity="50%";
            /* a.style.backdropFilter="blur(10px)";*/
+            a.style.display="block";
             a.href=`?url=${blog.path}`;
             a.append(blog.name);
             check_new(blog.path,a,last_visit_time);
