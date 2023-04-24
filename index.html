@@ -13,7 +13,8 @@
     font-size:1.2em;
     color:aqua;
     background-color:inherit;
-    display:inline;
+    display:inline-block;
+    width:100%;
   }
 </style>
 <script>
@@ -30,16 +31,19 @@ function blog_file(blog_url){ // Return the URL of main file of blog in blog_url
 function transform_text(src,content,blog_url,remove_last_line=false){ //src is a text, content is a Node refer, remove_last_line flag whether remove the last line of src, reason in function load_head
   src=src.replace(/\n\r|\n|\r/g,"\n");
   let src_list=[];
+  let img_max_width="";
   if(remove_last_line==true){
     src_list=src.split("\n").slice(0,-1).concat(["..."]);
+    img_max_width="200px";
   }else{
     src_list=src.split("\n");
+    img_max_width="100%";
   }
   for(let line of src_list){
     switch(line[0]){
       case "$": // $img_url
         let img=document.createElement("img");
-        img.style.maxWidth="100%";
+        img.style.maxWidth=img_max_width;
         img.src=gen_url(blog_url,line.substr(1));
         content.append(img);
         break;
