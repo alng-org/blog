@@ -69,9 +69,9 @@ function check_new(path,a,last_visit_time){
   .then( data => {
          let last_update_time=data[0].commit.committer.date; //get the latest modify timestamp (UTC) of path
          if(Date.parse(last_update_time)>=Date.parse(last_visit_time)){
-           a.style.backgroundColor="red"; // the new blog
+           a.style.backgroundColor="skyblue"; // the new blog
          }else{
-           a.style.backgroundColor="blue"; // the old blog
+           a.style.backgroundColor="darkgray"; // the old blog
          }
        });
   return;
@@ -100,7 +100,7 @@ if(last_visit_time!=""){
   last_visit_time="2000-01-01T00:00:00Z";// If you are first in, set a virtual last visit time to mark all blogs are new
 }
 document.body.append(document.createElement("br"),
-`We used cookie to save your last visited time for ${days} days. The new blog marks by background red, and the old marks by background blue.`);
+`We used cookie to save your last visited time for ${days} days. The new blog marks by background skyblue, and the old marks by background darkgray.`);
 let tips=document.getElementById("tips");
 let blog_url=(new URL(document.location).searchParams).get("url");
 let content=document.createElement("div");
@@ -116,8 +116,8 @@ if(blog_url==null){
             a.style.textDecoration="none";
             a.style.fontWeight="bold";
             a.style.padding="0.3em";
-            a.style.opacity="50%";
-           /* a.style.backdropFilter="blur(10px)";*/
+          /*a.style.opacity="50%";
+            a.style.backdropFilter="blur(10px)";*/
             a.style.display="block";
             a.href=`?url=${blog.path}`;
             a.append(blog.name);
@@ -143,7 +143,7 @@ if(blog_url==null){
           tips.remove();
           let back=document.createElement("a");
           back.href=document.referrer;
-          back.style.color="orange"; // Functional Node's color,Pending
+          back.style.color="black"; // Functional Node's color,Pending
           back.innerText="Back";
           document.body.append(document.createElement("br"),back);
           transform_text(src,content,blog_url);
