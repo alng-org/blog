@@ -13,6 +13,7 @@
     font-size:1.2em;
     color:aqua;
     background-color:inherit;
+    display:inline;
   }
 </style>
 <script>
@@ -120,7 +121,7 @@ if(blog_url==null){
             check_new(blog.path,a,last_visit_time);
             let head=document.createElement("div");
             head.className="content";
-            a.append(head);
+            a.append(document.createElement("br"),head);
             load_head(blog.path,head);
             content.append(a,document.createElement("br"),document.createElement("br"));
           }else{
