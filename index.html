@@ -51,7 +51,7 @@ function transform_text(src,content,blog_url,remove_last_line=false){ //src is a
         let link=document.createElement("a");
         let x=line.indexOf("=");
         let url=line.substr(x+1);
-        let text=line.substr(1,x);
+        let text=line.substr(1,x-1);
         link.href=gen_url(blog_url,url);
         link.innerText=text;
         content.append(link);
