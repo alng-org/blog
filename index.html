@@ -66,7 +66,10 @@ function transform_text(src,content,blog_url,remove_last_line=false){ //src is a
   content.lastChild.remove();
 }
 function check_new(path,a,last_visit_time){
-  fetch(blog_file(path),{headers:{"If-Modified-Since":last_visit_time}})
+  fetch(blog_file(path),{headers:{"If-Modified-Since":last_visit_time}}) 
+  //Github Page: Cannot distinguish the time single file's modified. It marks a common last modified time of the site,like:blog.alng.org
+  //So their is an Error Usage
+  //See more at: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/If-Modified-Since
   .then(response => {
          if(response.status==200){
            a.style.backgroundColor="rgba(0,0,0,0.5)"; // the new blog
