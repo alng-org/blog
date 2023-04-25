@@ -11,7 +11,7 @@
   }
   .content{
     font-size:1.2em;
-    color:greenyellow;
+    color:green;
     font-weight:bold;
     background-color:transparent;
   }
@@ -65,17 +65,17 @@ function transform_text(src,content,blog_url,remove_last_line=false){ //src is a
   }
   content.lastChild.remove();
 }
-function check_new(path,a,title,last_visit_time){
+function check_new(path,a,last_visit_time){
   fetch(`https://api.github.com/repos/alng-org/blog/commits?path=${path}&per_page=1`)
   .then(response => response.json())
   .then( data => {
          let last_update_time=data[0].commit.committer.date; //get the latest modify timestamp (UTC) of path
          if(Date.parse(last_update_time)>=Date.parse(last_visit_time)){
            a.style.backgroundColor="rgba(0,0,0,0.5)"; // the new blog
-           title.append("[ Updated ]");
+           a.title="This blog has updated after you last visited.";
          }else{
            a.style.backgroundColor="rgba(255,255,255,0.5)"; // the old blog
-           title.append("[ Unchanged ]");
+           a.title="This blog has no change since you visited.";
          }
        });
   return;
@@ -127,7 +127,7 @@ if(blog_url==null){
             let title=document.createElement("span"); //The title of Blog and a few info
             title.append(blog.name);
             a.append(title);
-            check_new(blog.path,a,title,last_visit_time);
+            check_new(blog.path,a,last_visit_time);
             let head=document.createElement("div");
             head.className="content";
             a.append(document.createElement("br"),head);
@@ -152,6 +152,7 @@ if(blog_url==null){
           back.style.color="black"; // Functional Node's color,Pending
           back.innerText="Back";
           document.body.append(document.createElement("br"),back);
+          content.style.color="aqua";
           transform_text(src,content,blog_url);
           document.body.append(document.createElement("br"),
                                document.createElement("br"),
