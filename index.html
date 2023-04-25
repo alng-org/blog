@@ -11,7 +11,8 @@
   }
   .content{
     font-size:1.2em;
-    color:forestgreen;
+    color:greenyellow;
+    font-weight:bold;
     background-color:transparent;
   }
 </style>
@@ -71,10 +72,10 @@ function check_new(path,a,title,last_visit_time){
          let last_update_time=data[0].commit.committer.date; //get the latest modify timestamp (UTC) of path
          if(Date.parse(last_update_time)>=Date.parse(last_visit_time)){
            a.style.backgroundColor="rgba(0,0,0,0.5)"; // the new blog
-           title.append(document.createElement("br"),"[This blog was updated after you last visited]");
+           title.append("[ Updated ]");
          }else{
            a.style.backgroundColor="rgba(255,255,255,0.5)"; // the old blog
-           title.append(document.createElement("br"),"[This blog has no change since you last visited]");
+           title.append("[ Unchanged ]");
          }
        });
   return;
@@ -120,6 +121,7 @@ if(blog_url==null){
             a.style.fontWeight="bold";
             a.style.padding="0.3em";
             a.style.backdropFilter="blur(5px)";
+            a.style.borderRadius="10px";
             a.style.display="block";
             a.href=`?url=${blog.path}`;
             let title=document.createElement("span"); //The title of Blog and a few info
@@ -161,7 +163,9 @@ if(blog_url==null){
 }
 </script>
 </head>
-<body onload="load_blog()" style="background-image:url(bk_img.jpg);background-repeat:repeat;">
+<body onload="load_blog()" style="background-image:url(bk_img.jpg);
+                                  background-repeat:repeat;
+                                  color:white;">
 <h1>Welcome to my blog.</h1>
 <h5 id="tips">Please wait for loading</h5>
 </body>
