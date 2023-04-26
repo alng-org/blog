@@ -88,7 +88,7 @@ function load_content(blog_url,content){// load the content of the blog
   .then(response => response.text(), error=> `ERROR! ${error.message}`)
   .then(src => {
           transform_text(src,content,blog_url);
-          content.focus(); // focus (scroll) to the content in really,also see at function goto_blog (yes, it is ambiguous)
+          content.parent.focus(); // focus (scroll) to the content in really,also see at function goto_blog (yes, it is ambiguous)
           return;
       });
 }
