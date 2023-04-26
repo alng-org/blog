@@ -134,6 +134,7 @@ function goto_blog(){// goto the blog and show it's full contents
   let expand=document.getElementById("expand");//See after, Section [Show the blog that will be viewed now]
   if(expand!=null){
     let id=decodeURI(expand.href); //confirm it is decode form of URI
+    console.log("id= ",id);
     let head=expand.lastChild;
       head.innerHTML="";
       load_head(id.substr(1),head);
