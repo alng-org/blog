@@ -3,7 +3,7 @@
                                minimum-scale=1.0 maximum-scale=1.0 user-scalable=no"/>
 <title>Thinking for ever</title>
 <style typw="text/css">
-  a{
+  .base{
     text-decoration:none;
     font-weight:bold;
     padding:0.3em;
@@ -75,6 +75,22 @@ function transform_text(src,content,blog_url,remove_last_line=false){
   }
   content.lastChild.remove();
 }
+function load_head(blog_url,head){// load the header of the blog, so the last line may be incomplete
+  fetch(blog_file(blog_url),{headers:{Range:"bytes=0-299"}})
+  .then(response => response.text(), error=> `ERROR! ${error.message}`)
+  .then(src => {
+          transform_text(src.toWellFormed().replace(/\ufffd/g,""),head,blog_url,true);
+          return;
+      });
+}
+function load_content(blog_url,content){// load the content of the blog
+  fetch(blog_file(blog_url))
+  .then(response => response.text(), error=> `ERROR! ${error.message}`)
+  .then(src => {
+          transform_text(src,content,blog_url);
+          return;
+      });
+}
 function check_has_new(){
   let expire_after_days= days=>(60*60*24*days);
   let days=30;
@@ -112,17 +128,18 @@ function UTC_now(){
   let now=new Date();
   return now.toUTCString();
 }
-function load_head(path,head){// load the header of the blog, so the last line may be incomplete
-  fetch(blog_file(path),{headers:{Range:"bytes=0-299"}})
-  .then(response => response.text())
-  .then(src => {
-          transform_text(src.toWellFormed().replace(/\ufffd/g,""),head,path,true);
-          return;
-      });
-}
 function goto_blog(){// goto the blog and show it's full contents
-  let blog_url=decodeURI(document.location.hash);
-  console.log(blog_url);
+  let blog_id=decodeURI(document.location.hash);
+  if(blog_id=="")
+    return;
+  let node=document.getElementById(blog_id);
+  if(node==null)
+    return;
+  node.focus();
+  let content=node.lastChild;
+  content.innerHTML="";
+  load_content(blog_id.substr(1), // Related the code a.id=`#${blog.path}`; in function load_blog
+               content);
 }
 function load_blog(){
 check_has_new();
@@ -140,15 +157,22 @@ fetch("https://api.github.com/repos/alng-org/blog/contents/")
       for(let blog of blogs){
         if(blog.type=="dir"){
           let a=document.createElement("a");
-          a.id=encodeURI(`#${blog.path}`);
-          a.href=a.id;
-          let title=document.createElement("span"); //The title of Blog and a few info
-          title.append(blog.name);
-          a.append(title);
+            a.className="base";
+            a.id=`#${blog.path}`;
+            a.href=a.id;
+          
+          let title=document.createElement("span"); //The title of Blog and a few info,if need
+             title.append(blog.name);
           let head=document.createElement("div");
-          head.className="content";
-          a.append(document.createElement("br"),head);
-          load_head(blog.path,head);
+             head.className="content";
+             load_head(blog.path,head);
+             a.onblur=()=>{
+                        head.innerHTML="";
+                        load_head(blog.path,head);
+                     };
+          
+          a.append(title,document.createElement("br"),head);
+          
           content.append(a,document.createElement("br"),document.createElement("br"));
         }else{
             /*PASS*/
@@ -157,6 +181,7 @@ fetch("https://api.github.com/repos/alng-org/blog/contents/")
       document.body.append(document.createElement("br"),
                            document.createElement("br"),
                            content);
+      goto_blog();
       window.onhashchange=goto_blog;
       return;
     });
