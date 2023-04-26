@@ -88,6 +88,7 @@ function load_content(blog_url,content){// load the content of the blog
   .then(response => response.text(), error=> `ERROR! ${error.message}`)
   .then(src => {
           transform_text(src,content,blog_url);
+          content.focus(); // focus (scroll) to the content in really,also see at function goto_blog (yes, it is ambiguous)
           return;
       });
 }
@@ -135,7 +136,7 @@ function goto_blog(){// goto the blog and show it's full contents
   let node=document.getElementById(blog_id);
   if(node==null)
     return;
-  node.focus();
+  node.focus();// set a focus state,it cannot scroll to show node, for more info, see load_content
   let content=node.lastChild;
   content.innerHTML="";
   load_content(blog_id.substr(1), // Related the code a.id=`#${blog.path}`; in function load_blog
