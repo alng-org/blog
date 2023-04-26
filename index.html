@@ -3,6 +3,15 @@
                                minimum-scale=1.0 maximum-scale=1.0 user-scalable=no"/>
 <title>Thinking for ever</title>
 <style typw="text/css">
+  a{
+    text-decoration:none;
+    font-weight:bold;
+    padding:0.3em;
+    backgroundColor:rgba(255,255,255,0.5);
+    backdrop-filter:blur(5px);
+    border-radius:10px;
+    display:block;
+  }
   a:link{
     color:yellow;
   }
@@ -94,7 +103,7 @@ function check_has_new(){
          }else if(response.status==304){ //HTTP 304 code: the request file has no modified
            tips.append("Blogs modified, for example: a new blog published, or an old blog changed.");
          }else{
-           tips.append(`Unkown whether blogs modified, but here is HTTP Status: ${redponse.status}.`);
+           tips.append(`Unkown whether blogs modified, but here is HTTP Status: ${response.status}.`);
          }
        }, error => { tips.append(`ERROR! ${error.message}`); });
   return;
@@ -111,60 +120,46 @@ function load_head(path,head){// load the header of the blog, so the last line m
           return;
       });
 }
+function goto_blog(){// goto the blog and show it's full contents
+  let blog_url=decodeURI(document.location.hash);
+  console.log(blog_url);
+}
 function load_blog(){
 check_has_new();
-let blog_url=(new URL(document.location).searchParams).get("url");
 let content=document.createElement("div");
 content.className="content";
-if(blog_url==null){
-  fetch("https://api.github.com/repos/alng-org/blog/contents/")
-  .then(response => response.json())
-  .then(blogs =>{
-        for(let blog of blogs){
-          if(blog.type=="dir"){
-            let a=document.createElement("a");
-            a.style.textDecoration="none";
-            a.style.fontWeight="bold";
-            a.style.padding="0.3em";
-            a.style.backgroundColor="rgba(255,255,255,0.5)";
-            a.style.backdropFilter="blur(5px)";
-            a.style.borderRadius="10px";
-            a.style.display="block";
-            a.href=`?url=${blog.path}`;
-            let title=document.createElement("span"); //The title of Blog and a few info
-            title.append(blog.name);
-            a.append(title);
-            let head=document.createElement("div");
-            head.className="content";
-            a.append(document.createElement("br"),head);
-            load_head(blog.path,head);
-            content.append(a,document.createElement("br"),document.createElement("br"));
-          }else{
-              /*PASS*/
-          }
+fetch("https://api.github.com/repos/alng-org/blog/contents/")
+.then(response =>{
+  if(response.ok==true){
+    return response.json();
+  }else{
+    return [{type:"dir",path:"",name:`Cannot get the contents, here is HTTP Status: ${response.status}. `}];
+  }
+},error => [{type:"dir",path:"",name:`ERROR! ${error.message}`}])
+   .then(blogs =>{
+      for(let blog of blogs){
+        if(blog.type=="dir"){
+          let a=document.createElement("a");
+          a.id=`#${blog.path}`;
+          a.href=a.id;
+          let title=document.createElement("span"); //The title of Blog and a few info
+          title.append(blog.name);
+          a.append(title);
+          let head=document.createElement("div");
+          head.className="content";
+          a.append(document.createElement("br"),head);
+          load_head(blog.path,head);
+          content.append(a,document.createElement("br"),document.createElement("br"));
+        }else{
+            /*PASS*/
         }
-        document.body.append(document.createElement("br"),
-                             document.createElement("br"),
-                             content);
-        return;
-      });
-}else{
-  fetch(blog_file(blog_url))
-  .then(response => response.text())
-  .then(src => {
-          let back=document.createElement("a");
-          back.href=document.referrer;
-          back.style.color="black"; // Functional Node's color,Pending
-          back.innerText="Back";
-          document.body.append(document.createElement("br"),back);
-          content.style.color="aqua";
-          transform_text(src,content,blog_url);
-          document.body.append(document.createElement("br"),
-                               document.createElement("br"),
-                               content);
-          return;
-        });
-}
+      }
+      document.body.append(document.createElement("br"),
+                           document.createElement("br"),
+                           content);
+      window.onhashchange=goto_blog;
+      return;
+    });
   return;
 }
 </script>
