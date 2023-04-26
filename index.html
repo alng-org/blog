@@ -7,7 +7,7 @@
     text-decoration:none;
     font-weight:bold;
     padding:0.3em;
-    backgroundColor:rgba(255,255,255,0.5);
+    background-color:rgba(255,255,255,0.5);
     backdrop-filter:blur(5px);
     border-radius:10px;
     display:block;
@@ -140,7 +140,7 @@ fetch("https://api.github.com/repos/alng-org/blog/contents/")
       for(let blog of blogs){
         if(blog.type=="dir"){
           let a=document.createElement("a");
-          a.id=`#${blog.path}`;
+          a.id=encodeURI(`#${blog.path}`);
           a.href=a.id;
           let title=document.createElement("span"); //The title of Blog and a few info
           title.append(blog.name);
