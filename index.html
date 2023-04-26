@@ -7,7 +7,7 @@
     color:yellow;
   }
   a:visited{
-    color:white;
+    color:gray;
   }
   .content{
     font-size:1.2em;
@@ -27,7 +27,8 @@ function gen_url(base_url,url){
 function blog_file(blog_url){ // Return the URL of main file of blog in blog_url
   return `${blog_url}/blog`;
 }
-function transform_text(src,content,blog_url,remove_last_line=false){ //src is a text, content is a Node refer, remove_last_line flag whether remove the last line of src, reason in function load_head
+function transform_text(src,content,blog_url,remove_last_line=false){ 
+  //src is a text, content is a Node refer, remove_last_line flag whether remove the last line of src, reason in function load_head
   src=src.replace(/\n\r|\n|\r/g,"\n");
   let src_list=[];
   let img_max_width="";
@@ -65,22 +66,37 @@ function transform_text(src,content,blog_url,remove_last_line=false){ //src is a
   }
   content.lastChild.remove();
 }
-function check_new(path,a,last_visit_time){
-  fetch(blog_file(path),{headers:{"If-Modified-Since":last_visit_time}}) 
+function check_has_new(){
+  let expire_after_days= days=>(60*60*24*days);
+  let days=30;
+  let last_visit_time=document.cookie; // The latest time you had visited this site
+  document.cookie=`${UTC_now()}; max-age=${expire_after_days(days)}`;
+  if(last_visit_time!=""){
+    document.body.append(`You has visited in ${last_visit_time}`);
+  }else{
+    document.body.append(`Will come,it seems you are first in this site.`);
+    last_visit_time="2000-01-01T00:00:00Z";// If you are first in, set a virtual last visit time to mark all blogs are new
+  }
+  document.body.append(document.createElement("br"),
+  `We used cookie to save your last visited time for ${days} days.`);
+  let tips=document.getElementById("tips");
+  tips.innerHTML="";
+  //
+  //=====This just for split two parts
+  //
+  fetch(document.location.href,{headers:{"If-Modified-Since":last_visit_time}}) 
   //Github Page: Cannot distinguish the time single file's modified. It marks a common last modified time of the site,like:blog.alng.org
   //So their is an Error Usage
   //See more at: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/If-Modified-Since
   .then(response => {
-         if(response.status==200){
-           a.style.backgroundColor="rgba(0,0,0,0.5)"; // the new blog
-           a.title="This blog has updated after you last visited.";
+         if(response.status==200){//HTTP 200 code: the request file has modified 
+           tips.append("Blogs unmodified, means there is no new blog or any blog changed.");
          }else if(response.status==304){ //HTTP 304 code: the request file has no modified
-           a.style.backgroundColor="rgba(255,255,255,0.5)"; // the old blog
-           a.title="This blog has no change since you visited.";
+           tips.append("Blogs modified, for example: a new blog published, or an old blog changed.");
          }else{
-           /*PASS*/
+           tips.append(`Unkown whether blogs modified, but here is HTTP Status: ${redponse.status}.`);
          }
-       });
+       }, error => { tips.append(`ERROR! ${error.message}`); });
   return;
 }
 function UTC_now(){
@@ -96,19 +112,7 @@ function load_head(path,head){// load the header of the blog, so the last line m
       });
 }
 function load_blog(){
-let expire_after_days= days=>(60*60*24*days);
-let days=14;
-let last_visit_time=document.cookie; // The latest time you had visited this site
-document.cookie=`${UTC_now()}; max-age=${expire_after_days(days)}`;
-if(last_visit_time!=""){
-  document.body.append(`You has visited in ${last_visit_time}`);
-}else{
-  document.body.append(`Will come,it seems you are first in this site.`);
-  last_visit_time="2000-01-01T00:00:00Z";// If you are first in, set a virtual last visit time to mark all blogs are new
-}
-document.body.append(document.createElement("br"),
-`We used cookie to save your last visited time for ${days} days.`);
-let tips=document.getElementById("tips");
+check_has_new();
 let blog_url=(new URL(document.location).searchParams).get("url");
 let content=document.createElement("div");
 content.className="content";
@@ -116,13 +120,13 @@ if(blog_url==null){
   fetch("https://api.github.com/repos/alng-org/blog/contents/")
   .then(response => response.json())
   .then(blogs =>{
-        tips.remove();
         for(let blog of blogs){
           if(blog.type=="dir"){
             let a=document.createElement("a");
             a.style.textDecoration="none";
             a.style.fontWeight="bold";
             a.style.padding="0.3em";
+            a.style.backgroundColor="rgba(255,255,255,0.5)";
             a.style.backdropFilter="blur(5px)";
             a.style.borderRadius="10px";
             a.style.display="block";
@@ -130,7 +134,6 @@ if(blog_url==null){
             let title=document.createElement("span"); //The title of Blog and a few info
             title.append(blog.name);
             a.append(title);
-            check_new(blog.path,a,last_visit_time);
             let head=document.createElement("div");
             head.className="content";
             a.append(document.createElement("br"),head);
@@ -149,7 +152,6 @@ if(blog_url==null){
   fetch(blog_file(blog_url))
   .then(response => response.text())
   .then(src => {
-          tips.remove();
           let back=document.createElement("a");
           back.href=document.referrer;
           back.style.color="black"; // Functional Node's color,Pending
