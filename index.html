@@ -11,7 +11,6 @@
     backdrop-filter:blur(5px);
     border-radius:10px;
     display:block;
-    outline:none;
   }
   a:link{
     color:yellow;
@@ -131,17 +130,31 @@ function UTC_now(){
   return now.toUTCString();
 }
 function goto_blog(){// goto the blog and show it's full contents
+  //Close the last blog viewed
+  let expand=document.getElementById("expand");//See after, Section [Show the blog that will be viewed now]
+  if(expand!=null){
+    let id=decodeURI(expand.href); //confirm it is decode form of URI
+    let head=expand.lastChild;
+      head.innerHTML="";
+      load_head(id.substr(1),head);
+    expand.id=id;
+  }else{
+    /*PASS*/
+  }
+  
+  //Show the blog that will be viewed now
   let blog_id=decodeURI(document.location.hash);
   if(blog_id=="")
     return;
   let node=document.getElementById(blog_id);
   if(node==null)
     return;
-  node.focus();// set a focus state,it cannot scroll to show node, for more info, see load_content
+  node.id="expand"; //See before, Section [Close the last blog viewed]
   let content=node.lastChild;
   content.innerHTML="";
   load_content(blog_id.substr(1), // Related the code a.id=`#${blog.path}`; in function load_blog
                content);
+  return;
 }
 function load_blog(){
 check_has_new();
@@ -168,10 +181,6 @@ fetch("https://api.github.com/repos/alng-org/blog/contents/")
           let head=document.createElement("div");
              head.className="content";
              load_head(blog.path,head);
-             a.onblur=()=>{
-                        head.innerHTML="";
-                        load_head(blog.path,head);
-                     };
           
           a.append(title,document.createElement("br"),head);
           
