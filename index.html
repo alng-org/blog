@@ -36,8 +36,11 @@ function gen_url(base_url,url){
 function blog_file(blog_url){ // Return the URL of main file of blog in blog_url
   return `${blog_url}/blog`;
 }
-function transform_text(src,content,blog_url,remove_last_line=false){ 
+function transform_text(src,content,blog_url,remove_last_line=false){
   //src is a text, content is a Node refer, remove_last_line flag whether remove the last line of src, reason in function load_head
+    
+ //Maybe here need a lock
+  
   src=src.replace(/\n\r|\n|\r/g,"\n");
   let src_list=[];
   let img_max_width="";
@@ -48,6 +51,7 @@ function transform_text(src,content,blog_url,remove_last_line=false){
     src_list=src.split("\n");
     img_max_width="100%";
   }
+  content.innerHTML="";
   for(let line of src_list){
     switch(line[0]){
       case "$": // $img_url
@@ -76,7 +80,7 @@ function transform_text(src,content,blog_url,remove_last_line=false){
   content.lastChild.remove();
 }
 function load_head(blog_url,head){// load the header of the blog, so the last line may be incomplete
-  fetch(blog_file(blog_url),{headers:{Range:"bytes=0-299"}})
+  fetch(blog_file(blog_url),{headers:{Range:"bytes=0-199"}})
   .then(response => response.text(), error=> `ERROR! ${error.message}`)
   .then(src => {
           transform_text(src.toWellFormed().replace(/\ufffd/g,""),head,blog_url,true);
@@ -91,6 +95,10 @@ function load_content(blog_url,content){// load the content of the blog
           document.body.scrollTo(0,content.parentNode.offsetTop); // scroll to the content in really,also see at function goto_blog (yes, it is ambiguous)
           return;
       });
+}
+function UTC_now(){
+  let now=new Date();
+  return now.toUTCString();
 }
 function check_has_new(){
   let expire_after_days= days=>(60*60*24*days);
@@ -125,17 +133,12 @@ function check_has_new(){
        }, error => { tips.append(`ERROR! ${error.message}`); });
   return;
 }
-function UTC_now(){
-  let now=new Date();
-  return now.toUTCString();
-}
 function goto_blog(){// goto the blog and show it's full contents
   //Close the last blog viewed
   let expand=document.getElementById("expand");//See after, Section [Show the blog that will be viewed now]
   if(expand!=null){
     let id=decodeURI((new URL(expand.href)).hash); //confirm it is decode form of URI
     let head=expand.lastChild;
-      head.innerHTML="";
       load_head(id.substr(1),head);
     expand.id=id;
   }else{
@@ -151,13 +154,13 @@ function goto_blog(){// goto the blog and show it's full contents
     return;
   node.id="expand"; //See before, Section [Close the last blog viewed]
   let content=node.lastChild;
-  content.innerHTML="";
   load_content(blog_id.substr(1), // Related the code a.id=`#${blog.path}`; in function load_blog
                content);
   return;
 }
 function load_blog(){
 check_has_new();
+let blog_id=decodeURI(document.location.hash);
 let content=document.createElement("div");
 content.className="content";
 fetch("https://api.github.com/repos/alng-org/blog/contents/")
@@ -180,7 +183,11 @@ fetch("https://api.github.com/repos/alng-org/blog/contents/")
              title.append(blog.name);
           let head=document.createElement("div");
              head.className="content";
-             load_head(blog.path,head);
+             if(blog_id!=a.id){
+                load_head(blog.path,head);
+             }else{
+               /*PASS*/
+             }
           
           a.append(title,document.createElement("br"),head);
           
@@ -192,7 +199,7 @@ fetch("https://api.github.com/repos/alng-org/blog/contents/")
       document.body.append(document.createElement("br"),
                            document.createElement("br"),
                            content);
-      //goto_blog();
+      goto_blog();
       window.onhashchange=goto_blog;
       return;
     });
